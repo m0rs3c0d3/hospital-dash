@@ -1,8 +1,6 @@
 # 🏥 Hospital Operations Dashboard
 
-A real-time hospital operations monitoring dashboard built with React. This project demonstrates complex data visualization, state management, and healthcare domain knowledge - ideal for showcasing technical skills to hospital IT recruiters.
-
-![Dashboard Preview](preview.png)
+A real-time hospital operations monitoring dashboard built with React. This project demonstrates complex data visualization, state management, and healthcare domain knowledge.
 
 ## ✨ Features
 
