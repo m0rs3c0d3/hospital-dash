@@ -27,11 +27,90 @@ A real-time hospital operations monitoring dashboard built with React. This proj
 
 ## 🛠️ Tech Stack
 
-- **React 18** - UI framework with hooks
-- **Recharts** - Data visualization library
-- **Vite** - Fast build tooling
-- **CSS Variables** - Theming and design tokens
-- **No Backend Required** - Static JSON data, perfect for free hosting
+### Core Technologies
+
+- **React 18.2** - Modern UI framework with hooks-based architecture
+- **Recharts 2.10** - Composable charting library built on D3.js
+- **Vite 5.0** - Next-generation frontend build tool with lightning-fast HMR
+- **CSS Variables** - Custom design system with theming tokens
+- **No Backend Required** - Static JSON data simulation, perfect for free hosting
+
+### Architecture & Patterns
+
+#### State Management
+The application uses **React Hooks** exclusively for state management, avoiding external libraries like Redux or MobX:
+
+- **`useState`**: Local component state for UI interactions (filters, toggles, playback controls)
+- **`useEffect`**: Side effects for async data loading and cleanup of intervals/timers
+- **`useMemo`**: Performance optimization for expensive calculations (metric aggregations, heatmap generation)
+- **`useCallback`**: Memoized callbacks to prevent unnecessary re-renders in child components
+- **`useRef`**: Direct DOM access and persisting values across renders (playback intervals)
+
+#### Custom Hooks
+
+**`useMetricsData(currentHour)`** - `/src/hooks/useMetricsData.js:11`
+- Loads and processes hospital metrics from JSON
+- Calculates department-level and hospital-wide KPIs
+- Generates alerts based on threshold violations
+- Computes heatmap and time series data for visualizations
+- Uses `useMemo` to recalculate only when `currentHour` changes
+
+**`useSimulation(maxHour, initialHour)`** - `/src/hooks/useSimulation.js:3`
+- Controls time-based playback through 48 hours of data
+- Manages play/pause state and variable speed (1x/2x/4x)
+- Provides step controls and seek functionality
+- Uses `setInterval` with cleanup to prevent memory leaks
+
+#### Data Flow
+
+1. **JSON Data Source** → Static metrics dataset with 48 hours of simulated hospital data
+2. **Custom Hooks** → Process raw data into computed metrics and visualizations
+3. **Props Down** → Parent components pass data to specialized child components
+4. **Events Up** → User interactions (filters, time controls) bubble up via callbacks
+5. **Reactive Updates** → Changes in `currentHour` trigger cascading recalculations via `useMemo`
+
+#### Calculation Layer
+
+**`/src/utils/calculations.js`** contains pure functions for:
+- Aggregating bed occupancy across departments
+- Computing average wait times and staff ratios
+- Threshold detection for alert generation
+- Heatmap matrix transformation
+- Time series data extraction for charts
+
+**`/src/utils/formatters.js`** provides:
+- Time formatting (12/24-hour display)
+- Number formatting (percentages, ratios)
+- Duration formatting (minutes to hours)
+
+#### Visualization Strategy
+
+**Recharts Integration:**
+- `<AreaChart>` for occupancy trends with gradient fills
+- `<LineChart>` for wait time progression
+- Responsive sizing with `ResponsiveContainer`
+- Custom tooltips showing department breakdowns
+- Color-coded by status (critical/warning/normal)
+
+**Custom Heatmap Grid:**
+- CSS Grid layout for time × department matrix
+- Color intensity based on occupancy percentage
+- Hover states showing exact values
+
+### Performance Optimizations
+
+1. **Memoization**: All expensive calculations wrapped in `useMemo` to prevent recalculation on every render
+2. **Callback Memoization**: Event handlers wrapped in `useCallback` to maintain referential equality
+3. **Code Splitting**: Vite automatically chunks components and lazy-loads when needed
+4. **CSS Variables**: Hardware-accelerated color transitions without JavaScript
+5. **Static Assets**: Pre-generated JSON data eliminates server round trips
+
+### Development Experience
+
+- **Hot Module Replacement (HMR)**: Vite preserves component state during development edits
+- **Fast Refresh**: React changes reflect instantly without full page reload
+- **ES Modules**: Native ESM in development for faster cold starts
+- **Optimized Production Build**: Rollup-based bundling with tree-shaking and minification
 
 ## 📁 Project Structure
 
@@ -157,6 +236,39 @@ Contributions welcome! Please read the contributing guidelines first.
 ## 📄 License
 
 MIT License - feel free to use this for your own portfolio!
+
+## 🙏 Credits & Acknowledgments
+
+This project is built with the following open-source libraries:
+
+### Core Dependencies
+
+- **[React](https://react.dev/)** (v18.2.0) - MIT License
+  A JavaScript library for building user interfaces, maintained by Meta and the React community.
+
+- **[Recharts](https://recharts.org/)** (v2.10.3) - MIT License
+  A composable charting library built on React components, powered by D3.js for data transformations.
+
+- **[Vite](https://vitejs.dev/)** (v5.0.8) - MIT License
+  A modern build tool that provides lightning-fast development experience with native ESM support.
+
+### Development Tools
+
+- **[@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react)** (v4.2.1) - MIT License
+  Official Vite plugin enabling React Fast Refresh and JSX transformation.
+
+### Font
+
+- **[JetBrains Mono](https://www.jetbrains.com/lp/mono/)** - OFL License
+  Monospace typeface designed for developers, used for numerical data display.
+
+### Special Thanks
+
+- Hospital operations data patterns inspired by real-world healthcare workflows
+- Color palette designed for clinical monitoring environments
+- Dashboard UX influenced by medical device interfaces and command centers
+
+All dependencies are licensed under permissive open-source licenses. See individual package repositories for full license texts.
 
 ---
 
